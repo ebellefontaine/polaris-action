@@ -19,6 +19,10 @@ inputs:
     description: 'The cli-scan.json file location'
     required: false
     default: '.synopsys/polaris/cli-scan.json'
+  run_incremental_scan:
+    description: 'Enable incremental file scanning for PRs'
+    required: false
+    default: false
   command_opts:
     required: false
     description: 'Additional command line options'
@@ -33,11 +37,18 @@ runs:
   - name: Extracting polaris_cli-linux64.zip to tmp
     run: unzip -j polaris_cli-linux64.zip -d /tmp
     shell: bash
+  - name: Get list of modified files for branch
+    if: ${{ github.event_name == 'pull_request' && inputs.run_incremental_scan == true }}
+    run: |
+      export POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true
+      git diff --name-only ${{ github.base_ref }} > diff.txt
+      export EXTRA_CMD='--incremental diff.txt'
+    shell: bash
   - name: Running Scan 
     run: |
         export POLARIS_ACCESS_TOKEN=${{ inputs.access_token }}
         export POLARIS_SERVER_URL=${{ inputs.server_url }}
-        /tmp/polaris ${{ inputs.command_opts }} analyze -w --coverity-ignore-capture-failure
+        /tmp/polaris ${{ inputs.command_opts }} analyze -w --coverity-ignore-capture-failure ${EXTRA_CMD}
     shell: bash
   - run: ${{ github.action_path}}/polaris-scan-result-check.py ${{ inputs.cli_scan_json_file }} ${{ inputs.total_issues }} ${{ inputs.new_issues }}
     shell: bash
