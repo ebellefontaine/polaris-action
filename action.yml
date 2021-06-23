@@ -44,6 +44,8 @@ runs:
         export POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true
         git diff --name-only origin/${{ github.base_ref }} > diff.txt
         /tmp/polaris ${{ inputs.command_opts }} analyze -w --coverity-ignore-capture-failure --incremental diff.txt
+        cat .synopsys/polaris/data/coverity/2021.03/idir/incremental-results/incremental-results.json
+        cat .synopsys/polaris/data/coverity/2021.03/idir/incremental-results/new-issues.json
     shell: bash
   - run: ${{ github.action_path}}/polaris-scan-result-check.py ${{ inputs.cli_scan_json_file }} ${{ inputs.total_issues }} ${{ inputs.new_issues }}
     shell: bash
