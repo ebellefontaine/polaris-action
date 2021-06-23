@@ -40,7 +40,7 @@ runs:
   - name: Get list of modified files for branch
     run: |
       export POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true
-      git diff --name-only ${{ github.base_ref }} > diff.txt
+      git diff --name-only origin/${{ github.base_ref }} > diff.txt
       export EXTRA_CMD='--incremental diff.txt'
     shell: bash
   - name: Running Scan 
