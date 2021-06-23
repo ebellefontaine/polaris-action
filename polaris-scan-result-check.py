@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import json
 import sys
+import pprint
 
 
 class PolarisResults:
@@ -25,6 +26,7 @@ class PolarisResults:
             f.close()
 
     def __validate_set_required_fields(self):
+        pprint.pprint(self.json_data)
         if "tools" not in self.json_data:
             print("missing 'tools' section from json output")
             sys.exit(3)
